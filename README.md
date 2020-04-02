@@ -1,5 +1,5 @@
 # aik-portal-frontend
-## Componente Back-End del portal AIK
+## Componente Front-End del portal AIK
 
 ### Equipo de trabajo:
 
