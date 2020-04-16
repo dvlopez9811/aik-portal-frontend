@@ -87,7 +87,6 @@ app.get('/experience', function(req, res){
     .get('http://'+backendHost+':3000/publicidad')
     .end(function(err, data) {
       if(data==undefined){
-        res.status(404).send({});
         return;
       } else {
         if(data.status == 403){
@@ -123,6 +122,7 @@ app.get('/experience', function(req, res){
     .get('http://'+backendHost+':3000/redsocial')
     .end(function(err, data) {
       if(data==undefined){
+        res.status(404).send({});
         return;
       } else {
         if(data.status == 403){
@@ -130,7 +130,6 @@ app.get('/experience', function(req, res){
         }else{
           var redsocial = data.body;
           exp[2] = redsocial;
-          console.log(exp);
           if(!(typeof exp[1] == 'undefined') && !(typeof exp[0] == 'undefined')){
             res.render('experience', {exp : exp});
           }

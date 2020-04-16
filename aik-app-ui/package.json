@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "ui for the AIK website....im totally not ripping this off.......",
   "scripts": {
-    "test": "mocha"
+    "test": "find ./test -name '*.js' -exec ./node_modules/.bin/mocha \\{} \\;"
   },
   "repository": {
     "type": "git",
@@ -16,8 +16,11 @@
   },
   "homepage": "https://github.com/icesi-ops/aik-portal#readme",
   "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
+    "mocha": "^7.1.1",
     "superagent": "^3.6.0"
   }
 }
