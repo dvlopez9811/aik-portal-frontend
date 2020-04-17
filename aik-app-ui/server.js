@@ -27,11 +27,15 @@ app.get('/buycars', function(req, res){
   request
     .get('http://'+backendHost+':3000/buycars')
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
+      if(data==undefined){
+        res.status(404).send({});
       } else {
-        var buy = data.body;
-        res.render('buycars', { buy: buy} );
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        } else {
+          var buy = data.body;
+          res.render('buycars', { buy: buy} );
+        }
       }
     })
 })
@@ -43,11 +47,15 @@ app.get('/vehicles', function(req, res){
     .get('http://'+backendHost+':3000/vehicles')
     .set('Authorization', 'Bearer ' + req.access_token)
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
+      if(data==undefined){
+        res.status(404).send({});
       } else {
-        var vehicles = data.body;
-        res.render('vehicles', {vehicles : vehicles});
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        } else {
+          var vehicles = data.body;
+          res.render('vehicles', {vehicles : vehicles});
+        }
       }
     })
 })
@@ -56,11 +64,15 @@ app.get('/support', function(req, res){
   request
     .get('http://'+backendHost+':3000/support')
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
+      if(data==undefined){
+        res.status(404).send({});
       } else {
-        var support = data.body;
-        res.render('support', {support : support});
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        } else {
+          var support = data.body;
+          res.render('support', {support : support});
+        }
       }
     })
 })
@@ -74,26 +86,35 @@ app.get('/experience', function(req, res){
   request
     .get('http://'+backendHost+':3000/publicidad')
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
-      }else{
-        var publicidad = data.body;
-        exp[0] = publicidad;
-        if(!(typeof exp[1] == 'undefined') && !(typeof exp[2] == 'undefined')){
-          res.render('experience', {exp : exp});
+      if(data==undefined){
+        res.status(404).send({});
+        return;
+      } else {
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        }else{
+          var publicidad = data.body;
+          exp[0] = publicidad;
+          if(!(typeof exp[1] == 'undefined') && !(typeof exp[2] == 'undefined')){
+            res.render('experience', {exp : exp});
+          }
         }
-      }
+      }    
     })
     request
     .get('http://'+backendHost+':3000/innovacion')
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
-      }else{
-        var innovacion = data.body;
-        exp[1] = innovacion;
-        if(!(typeof exp[0] == 'undefined') && !(typeof exp[2] == 'undefined')){
-          res.render('experience', {exp : exp});
+      if(data==undefined){
+        return;
+      } else {
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        }else{
+          var innovacion = data.body;
+          exp[1] = innovacion;
+          if(!(typeof exp[0] == 'undefined') && !(typeof exp[2] == 'undefined')){
+            res.render('experience', {exp : exp});
+          }
         }
       }
     })
@@ -101,18 +122,21 @@ app.get('/experience', function(req, res){
     request
     .get('http://'+backendHost+':3000/redsocial')
     .end(function(err, data) {
-      if(data.status == 403){
-        res.send(403, '403 Forbidden');
-      }else{
-        var redsocial = data.body;
-        exp[2] = redsocial;
-        console.log(exp);
-        if(!(typeof exp[1] == 'undefined') && !(typeof exp[0] == 'undefined')){
-          res.render('experience', {exp : exp});
+      if(data==undefined){
+        return;
+      } else {
+        if(data.status == 403){
+          res.send(403, '403 Forbidden');
+        }else{
+          var redsocial = data.body;
+          exp[2] = redsocial;
+          console.log(exp);
+          if(!(typeof exp[1] == 'undefined') && !(typeof exp[0] == 'undefined')){
+            res.render('experience', {exp : exp});
+          }
         }
       }
     })
-    
 })
 
 module.exports = app.listen(3030);
