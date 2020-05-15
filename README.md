@@ -3,8 +3,6 @@
 
 ### Equipo de trabajo:
 
-Jorge Moreno - @Jorge-Andres-Moreno
-
 Ricardo Nuñez - @RicNuva18
 
 Sebastian Quintero - @squintero14
