@@ -25,9 +25,9 @@ node {
     string amiIdUnFormat = sh returnStdout: true, script:"tail -n1 CD/Packer/packer.log | awk '{printf \$NF}' "
     def amiId = amiIdUnFormat.replace("\\n","")
     def ec2Keypair = "automatizacion-devops-RicardoSebastianAndres"
-    def secGroup = "sg-0f1c0b065c263e578"
+    def secGroup = "sg-079c83c1e39a0fd4d"
     def instanceType = "t2.micro"
-    def subnetId = "subnet-0d1bf3e4af65144ce"
+    def subnetId = "subnet-0eb30d81622e99930"
   
     sh "tail -n1 CD/Packer/packer.log"
     sh "cat CD/Packer/packer.log"
@@ -57,7 +57,7 @@ node {
     def elbId = "alb-aik"
     sh "aws elbv2 register-targets \
     --region us-west-2 \
-    --target-group-arn arn:aws:elasticloadbalancing:us-west-2:682086073548:targetgroup/aik-target-group/acc415ab4c36a861 \
+    --target-group-arn arn:aws:elasticloadbalancing:us-west-2:682086073548:targetgroup/aik-target-group/243de9639a69bc88 \
     --targets Id=${instanceId}"
 
 }
