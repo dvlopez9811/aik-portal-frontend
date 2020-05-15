@@ -1,0 +1,63 @@
+#!groovy
+
+node {
+  
+  parameters {
+        string(defaultValue: "Este es el valor Incorrecto", description: 'K', name: 'APP_VERSION')
+  }
+
+  step([$class: 'WsCleanup'])
+
+  stage "Checkout Git repo"
+    checkout scm
+
+  stage "Checkout additional repos"
+    dir("Configuration_management") {
+      git "https://github.com/dvlopez9811/aik-portal-frontend"
+    }
+
+  stage "Run Packer"
+  sh "/opt/packer validate -var=\"appVersion=${params.APP_VERSION}\" -var-file=CD/Packer/aik-app_vars.json CD/Packer/aik-app.json"
+  sh "/opt/packer build -machine-readable -var=\"appVersion=${params.APP_VERSION}\" -var-file=CD/Packer/aik-app_vars.json CD/Packer/aik-app.json | tee CD/Packer/packer.log"
+  
+  stage "Deploy AMI"
+
+    string amiIdUnFormat = sh returnStdout: true, script:"tail -n1 CD/Packer/packer.log | awk '{printf \$NF}' "
+    def amiId = amiIdUnFormat.replace("\\n","")
+    def ec2Keypair = "automatizacion-devops-RicardoSebastianAndres"
+    def secGroup = "sg-0f1c0b065c263e578"
+    def instanceType = "t2.micro"
+    def subnetId = "subnet-0d1bf3e4af65144ce"
+  
+    sh "tail -n1 CD/Packer/packer.log"
+    sh "cat CD/Packer/packer.log"
+    echo "Esto tiene packer.log \$(cat CD/Packer/packer.log)"
+    echo "Launching an instance from ${amiId}"
+  
+    sh "aws ec2 run-instances \
+        --region us-west-2 \
+        --image-id ${amiId} \
+        --key-name ${ec2Keypair} \
+        --security-group-ids ${secGroup} \
+        --instance-type ${instanceType} \
+        --subnet-id ${subnetId} \
+        | tee .ec2_run-instances.log \
+       "
+  
+    def instanceId = sh returnStdout: true, script: "printf \$(jq .Instances[0].InstanceId < .ec2_run-instances.log)"
+  
+    sh "aws ec2 create-tags --resources ${instanceId} \
+        --region us-west-2 \
+        --tags Key=Name,Value=\"Jenkins (aik-app-${params.APP_VERSION})\" Key=CreatedBy,Value=Jenkins"
+    
+    echo "Waiting for the instance to come into service"
+    sh "aws ec2 wait instance-running --instance-ids ${instanceId}"
+    sleep 60
+    echo "Registering with ELB"
+    def elbId = "alb-aik"
+    sh "aws elbv2 register-targets \
+    --region us-west-2 \
+    --target-group-arn arn:aws:elasticloadbalancing:us-west-2:682086073548:targetgroup/aik-target-group/acc415ab4c36a861 \
+    --targets Id=${instanceId}"
+
+}
